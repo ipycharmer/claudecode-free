@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="https://github.com/ipycharmer">
+<a href="https://ipycharmer.github.io/claudecode-free">
 <pre>
     ██ ██████  ██   ██  ██████ ██  ██   █████  ██████  ██   ██ ███████ ██████
      ██ ██   ██  ██ ██  ██      ██  ██  ██   ██ ██   ██ ███ ███ ██      ██   ██
