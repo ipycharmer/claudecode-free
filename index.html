@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code × OpenRouter | ipycharmer</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+    :root {
+      --bg: #020818;
+      --bg2: #060f2e;
+      --bg3: #0a1a40;
+      --blue1: #00a2d8;
+      --blue2: #0073ff;
+      --blue3: #2979ff;
+      --blue4: #40a9ff;
+      --cyan: #00d4ff;
+      --white: #f0f4ff;
+      --dim: #5a7ab0;
+      --border: #0e2a5c;
+      --glow: rgba(41, 121, 255, 0.15);
+      --glow2: rgba(0, 212, 255, 0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Background grid ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(41, 121, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(41, 121, 255, 0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Radial glow behind hero ── */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 600px;
+      background: radial-gradient(ellipse, rgba(41, 121, 255, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      border-bottom: 1px solid var(--border);
+      background: rgba(2, 8, 24, 0.85);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+
+    nav .wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+
+    .nav-logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: var(--cyan);
+      font-size: 14px;
+      letter-spacing: 0.08em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+    }
+
+    .nav-links a {
+      color: var(--dim);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: color .2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--white);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 100px 0 72px;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      background: rgba(41, 121, 255, 0.08);
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--cyan);
+      letter-spacing: 0.06em;
+      margin-bottom: 32px;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1)
+      }
+
+      50% {
+        opacity: .5;
+        transform: scale(1.4)
+      }
+    }
+
+    .hero h1 {
+      font-size: clamp(36px, 7vw, 72px);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 .accent {
+      color: var(--blue3);
+    }
+
+    .hero h1 .dim-text {
+      color: var(--dim);
+    }
+
+    .hero p {
+      font-size: 18px;
+      line-height: 1.7;
+      color: var(--dim);
+      max-width: 560px;
+      margin: 0 auto 40px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all .2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--blue2);
+      color: #fff;
+      box-shadow: 0 0 24px rgba(0, 85, 255, 0.4);
+    }
+
+    .btn-primary:hover {
+      background: var(--blue3);
+      box-shadow: 0 0 36px rgba(41, 121, 255, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--dim);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--blue3);
+      color: var(--white);
+    }
+
+    /* ── TERMINAL PREVIEW ── */
+    .terminal-wrap {
+      padding: 48px 0;
+    }
+
+    .terminal {
+      background: #010c1e;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(41, 121, 255, 0.06);
+    }
+
+    .term-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: #020e22;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .dot-r {
+      background: #ff5f57;
+    }
+
+    .dot-y {
+      background: #ffbd2e;
+    }
+
+    .dot-g {
+      background: #28c940;
+    }
+
+    .term-title {
+      flex: 1;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--dim);
+    }
+
+    .term-body {
+      padding: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .t-dim {
+      color: #2a4a7f;
+    }
+
+    .t-b3 {
+      color: #2979ff;
+    }
+
+    .t-b4 {
+      color: #40a9ff;
+    }
+
+    .t-b5 {
+      color: #00d4ff;
+    }
+
+    .t-w {
+      color: #f0f4ff;
+    }
+
+    .t-g {
+      color: #28c940;
+    }
+
+    .t-logo {
+      color: #1565c0;
+    }
+
+    /* ── SECTION ── */
+    section {
+      padding: 72px 0;
+    }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--blue4);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(24px, 4vw, 36px);
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .section-sub {
+      color: var(--dim);
+      font-size: 16px;
+      line-height: 1.7;
+      max-width: 560px;
+      margin-bottom: 48px;
+    }
+
+    /* ── FEATURES GRID ── */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      transition: border-color .2s, transform .2s, box-shadow .2s;
+    }
+
+    .card:hover {
+      border-color: var(--blue3);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 40px rgba(41, 121, 255, 0.1);
+    }
+
+    .card-icon {
+      font-size: 28px;
+      margin-bottom: 16px;
+    }
+
+    .card h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: var(--dim);
+      line-height: 1.6;
+    }
+
+    /* ── MODEL TABLE ── */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    thead {
+      background: var(--bg3);
+    }
+
+    th {
+      padding: 14px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dim);
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(14, 42, 92, 0.5);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(41, 121, 255, 0.04);
+    }
+
+    .model-id {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--dim);
+    }
+
+    .badge-free {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(40, 201, 64, 0.12);
+      color: #28c940;
+      border: 1px solid rgba(40, 201, 64, 0.25);
+    }
+
+    .badge-paid {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(41, 121, 255, 0.12);
+      color: var(--blue4);
+      border: 1px solid rgba(41, 121, 255, 0.25);
+    }
+
+    .highlight-row td {
+      background: rgba(0, 212, 255, 0.04);
+    }
+
+    .highlight-row td:first-child {
+      border-left: 2px solid var(--cyan);
+    }
+
+    .fast {
+      color: #28c940;
+      font-weight: 600;
+    }
+
+    /* ── STEPS ── */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .step {
+      display: flex;
+      gap: 24px;
+      padding: 32px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .step:last-child {
+      border-bottom: none;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--blue4);
+    }
+
+    .step-content h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .step-content p {
+      font-size: 14px;
+      color: var(--dim);
+      line-height: 1.6;
+    }
+
+    .code-inline {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      background: rgba(41, 121, 255, 0.1);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 8px;
+      color: var(--cyan);
+    }
+
+    .code-block {
+      margin-top: 12px;
+      background: #010c1e;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--b4);
+      overflow-x: auto;
+    }
+
+    .code-block .cmd {
+      color: var(--cyan);
+    }
+
+    .code-block .cmt {
+      color: #1e3a6e;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      text-align: center;
+    }
+
+    footer p {
+      color: var(--dim);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    footer a {
+      color: var(--blue4);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      color: var(--cyan);
+    }
+
+    /* ── LEGAL BOX ── */
+    .legal {
+      background: rgba(41, 121, 255, 0.05);
+      border: 1px solid rgba(41, 121, 255, 0.2);
+      border-radius: 12px;
+      padding: 24px 28px;
+      font-size: 14px;
+      color: var(--dim);
+      line-height: 1.7;
+      margin-top: 48px;
+    }
+
+    .legal strong {
+      color: var(--white);
+    }
+
+    @media(max-width:600px) {
+      .hero {
+        padding: 64px 0 48px;
+      }
+
+      .hero h1 {
+        font-size: 36px;
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      .step {
+        flex-direction: column;
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="wrap">
+      <span class="nav-logo">ipycharmer</span>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#models">Models</a>
+        <a href="#setup">Setup</a>
+        <a href="https://github.com/ipycharmer" target="_blank">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="wrap">
+    <div class="hero">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        Free & Open Source
+      </div>
+      <h1>
+        Claude Code<br>
+        <span class="dim-text">×</span>
+        <span class="accent"> OpenRouter</span>
+      </h1>
+      <p>
+        Run Anthropic's agentic coding environment on any machine,
+        powered by free AI models — no Anthropic subscription needed.
+      </p>
+      <div class="hero-actions">
+        <a href="https://github.com/ipycharmer/claudecode-free" class="btn btn-primary" target="_blank">
+          ↗ View on GitHub
+        </a>
+        <a href="#setup" class="btn btn-secondary">
+          Quick Start →
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- TERMINAL -->
+  <div class="wrap">
+    <div class="terminal-wrap">
+      <div class="terminal">
+        <div class="term-bar">
+          <div class="dot dot-r"></div>
+          <div class="dot dot-y"></div>
+          <div class="dot dot-g"></div>
+          <span class="term-title">run.sh — claudecode-free</span>
+        </div>
+        <div class="term-body">
+          <pre><span class="t-logo">  ██ ██████  ██   ██  ██████ ██  ██   █████  ██████  ██   ██ ███████ ██████
+  ██ ██   ██  ██ ██  ██      ██  ██  ██   ██ ██   ██ ███ ███ ██      ██   ██
+  ██ ██████    ███   ██      ███████  ███████ ██████  ██ █ ██ █████   ██████
+  ██ ██       ██     ██      ██  ██  ██   ██ ██   ██ ██   ██ ██      ██   ██
+  ██ ██      ██       ██████ ██  ██  ██   ██ ██   ██ ██   ██ ███████ ██   ██</span>
+
+<span class="t-b4">               Claude Code  ×  OpenRouter  ×  Docker</span>
+<span class="t-dim">          Powered by ipycharmer  ·  github.com/ipycharmer</span>
+
+<span class="t-g">  ✓</span>  <span class="t-dim">API key loaded  (sk-or-v1…****)</span>
+
+<span class="t-b4">╔════════════════════════════════════════════════════════╗
+│                     Choose a model                     │
+╠════════════════════════════════════════════════════════╣
+│</span>  <span class="t-b5">★  ↑↓ arrows · Enter to select · [m] manual</span>           <span class="t-b4">│</span>
+<span class="t-b4">│                                                        │
+│</span>  <span class="t-b5">❯ Owl Alpha        OpenRouter   1.05M   Agentic</span>       <span class="t-b4">│
+│</span>  <span class="t-dim">  openrouter/owl-alpha                              </span>  <span class="t-b4">│
+│                                                        │
+│</span>  <span class="t-dim">  Nemotron 120B    NVIDIA       128K    Reasoning</span>     <span class="t-b4">│
+│</span>  <span class="t-dim">  GPT-OSS 120B     OpenAI       128K    Flagship</span>      <span class="t-b4">│
+╚════════════════════════════════════════════════════════╝</span>
+
+<span class="t-b4">  ◆</span>  <span class="t-w">Workspace:</span> <span class="t-dim">/Users/dev/my-project</span>
+<span class="t-b4">  ⟳</span>  <span class="t-dim">Starting container...</span>
+<span class="t-b4">  ◈</span>  <span class="t-dim">Proxy ready → openrouter/owl-alpha</span>
+
+<span class="t-b5">╭─── Claude Code v2.1 ────────────────────────────────╮</span>
+<span class="t-b5">│  openrouter/owl-alpha · API Usage Billing           │</span>
+<span class="t-b5">╰─────────────────────────────────────────────────────╯</span>
+
+<span class="t-dim">❯</span> <span class="t-w">list all files and fix any bugs you find</span>
+
+<span class="t-b4">●</span> <span class="t-dim">I'll start by reading the directory structure...</span>
+  <span class="t-dim">Listed 12 files  ·  Found 2 issues  ·  Applying fixes...</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="wrap" id="features">
+    <section>
+      <div class="section-label">Features</div>
+      <div class="section-title">Everything you need. Nothing you don't.</div>
+      <p class="section-sub">A complete agentic coding environment that installs once and runs anywhere.</p>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-icon">🆓</div>
+          <h3>Completely Free</h3>
+          <p>Uses OpenRouter's free model tier. Owl Alpha has no daily usage limits at all. No credit card required.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🐳</div>
+          <h3>One Build, Run Forever</h3>
+          <p>Docker image builds once in ~10 minutes. Every subsequent launch is instant. Works on macOS 10.15+, Linux,
+            WSL2.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🤖</div>
+          <h3>Full Agentic Power</h3>
+          <p>Reads files, writes code, runs bash, uses git, installs packages, browses the web. Same as Claude Code with
+            Anthropic.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔀</div>
+          <h3>5 Free Models</h3>
+          <p>Switch between Owl Alpha, Nemotron, Ring, GPT-OSS, and Laguna with arrow keys. Or type any OpenRouter model
+            ID.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🛠️</div>
+          <h3>Full Dev Stack</h3>
+          <p>Python, Node, Go, Rust, sqlite3, Chromium, Playwright, Docker CLI — all pre-installed in the image.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎨</div>
+          <h3>Beautiful TUI</h3>
+          <p>Animated logo, arrow-key model picker, smooth startup sequence. Looks good in any terminal.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- MODELS -->
+  <div class="wrap" id="models">
+    <section>
+      <div class="section-label">Benchmark</div>
+      <div class="section-title">Model Comparison</div>
+      <p class="section-sub">Tested on a real Flask project with file read + write tasks. Results by ipycharmer.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Prompt 1</th>
+              <th>Prompt 2</th>
+              <th>Type</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="t-w" style="font-weight:600">openrouter/auto</span><br><span
+                  class="model-id">openrouter/auto</span></td>
+              <td class="fast">5s</td>
+              <td class="fast">20s</td>
+              <td><span class="badge-paid">PAID</span></td>
+              <td style="color:var(--dim);font-size:13px">Fastest overall</td>
+            </tr>
+            <tr>
+              <td><span class="t-w" style="font-weight:600">Cobuddy</span><br><span
+                  class="model-id">baidu/cobuddy:free</span></td>
+              <td>28s</td>
+              <td class="fast">26s</td>
+              <td><span class="badge-free">FREE</span></td>
+              <td style="color:var(--dim);font-size:13px">Fastest free</td>
+            </tr>
+            <tr>
+              <td><span class="t-w" style="font-weight:600">GPT-OSS 120B</span><br><span
+                  class="model-id">openai/gpt-oss-120b:free</span></td>
+              <td>13s</td>
+              <td>1m 8s</td>
+              <td><span class="badge-free">FREE</span></td>
+              <td style="color:var(--dim);font-size:13px">Solid all-rounder</td>
+            </tr>
+            <tr>
+              <td><span class="t-w" style="font-weight:600">Ring 2.6 1T</span><br><span
+                  class="model-id">inclusionai/ring-2.6-1t:free</span></td>
+              <td>15s</td>
+              <td>44s</td>
+              <td><span class="badge-free">FREE</span></td>
+              <td style="color:var(--dim);font-size:13px">Best free speed/quality</td>
+            </tr>
+            <tr>
+              <td><span class="t-w" style="font-weight:600">GLM 4.5 Air</span><br><span
+                  class="model-id">z-ai/glm-4.5-air:free</span></td>
+              <td>16s</td>
+              <td>1m</td>
+              <td><span class="badge-free">FREE</span></td>
+              <td style="color:var(--dim);font-size:13px">Good balance</td>
+            </tr>
+            <tr>
+              <td><span class="t-w" style="font-weight:600">Nemotron 120B</span><br><span
+                  class="model-id">nvidia/nemotron-3-super-120b-a12b:free</span></td>
+              <td>21s</td>
+              <td>2m 38s</td>
+              <td><span class="badge-free">FREE</span></td>
+              <td style="color:var(--dim);font-size:13px">Accurate</td>
+            </tr>
+            <tr>
+              <td><span class="t-w" style="font-weight:600">Laguna M.1</span><br><span
+                  class="model-id">poolside/laguna-m.1:free</span></td>
+              <td>22s</td>
+              <td>1m 38s</td>
+              <td><span class="badge-free">FREE</span></td>
+              <td style="color:var(--dim);font-size:13px">Code specialist</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><span style="color:var(--cyan);font-weight:700">Owl Alpha ★</span><br><span
+                  class="model-id">openrouter/owl-alpha</span></td>
+              <td>20s</td>
+              <td>3m</td>
+              <td><span class="badge-free">FREE</span></td>
+              <td style="color:var(--cyan);font-size:13px">100% accurate · No limits</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><span style="color:var(--cyan);font-weight:700">openrouter/free ★</span><br><span
+                  class="model-id">openrouter/free</span></td>
+              <td>22s</td>
+              <td>1m 20s</td>
+              <td><span class="badge-free">FREE</span></td>
+              <td style="color:var(--cyan);font-size:13px">Faster · No limits</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="legal" style="margin-top:24px">
+        <strong>Note:</strong> Owl Alpha and openrouter/free are the only free models with <strong>no daily usage
+          restrictions</strong>. All other free models share OpenRouter's rate limits.
+        Read more at <a href="https://openrouter.ai" target="_blank" style="color:var(--blue4)">openrouter.ai</a> or
+        reach out on
+        <a href="https://www.linkedin.com/in/ipycharmer" target="_blank" style="color:var(--blue4)">LinkedIn</a>.
+        <br><br>
+        <strong>Privacy:</strong> Free models including Owl Alpha may log your prompts. Do not send sensitive data, API
+        keys, passwords, or proprietary code.
+      </div>
+    </section>
+  </div>
+
+  <!-- SETUP -->
+  <div class="wrap" id="setup">
+    <section>
+      <div class="section-label">Quick Start</div>
+      <div class="section-title">Up in 3 commands.</div>
+      <p class="section-sub">First run builds the image (~10 min). Every run after that is instant.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h3>Clone & make executable</h3>
+            <div class="code-block">
+              <span class="cmd">git clone https://github.com/ipycharmer/claudecode-free</span>
+              <span class="cmd">cd claudecode-free</span>
+              <span class="cmd">chmod +x run.sh</span>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h3>Get a free OpenRouter API key</h3>
+            <p>Go to <a href="https://openrouter.ai/keys" target="_blank"
+                style="color:var(--blue4)">openrouter.ai/keys</a> and create a free account. No credit card needed for
+              free models.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h3>Run it</h3>
+            <div class="code-block">
+              <span class="cmd">./run.sh</span>
+              <span class="cmt"># Enter your API key when prompted (saved for future runs)</span>
+              <span class="cmt"># Select a model with ↑↓ arrows</span>
+              <span class="cmt"># Enter your workspace folder path</span>
+              <span class="cmt"># Claude Code launches — start coding</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="legal">
+        <strong>Legal:</strong> This project uses the Claude Code CLI as published on npm without modification. It uses
+        the standard
+        <code style="font-family:JetBrains Mono;font-size:12px;color:var(--cyan)">ANTHROPIC_BASE_URL</code> environment
+        variable —
+        an officially supported configuration option. This does not violate any rights of Anthropic. You are responsible
+        for
+        complying with <a href="https://openrouter.ai/terms" target="_blank" style="color:var(--blue4)">OpenRouter's
+          terms of service</a>
+        and the terms of your chosen model provider.
+      </div>
+    </section>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrap">
+      <p>
+        Built by <a href="https://ipycharmer.github.io/" target="_blank">Ipycharmer</a> ·
+        <a href="https://www.linkedin.com/in/ipycharmer" target="_blank">LinkedIn</a> ·
+        <a href="https://github.com/ipycharmer/" target="_blank">GitHub</a>
+      </p>
+      <p style="margin-top:8px;font-size:13px">
+        Not affiliated with Anthropic. Claude Code is a product of Anthropic PBC.
+      </p>
+    </div>
+  </footer>
+
+</body>
+
+</html>
